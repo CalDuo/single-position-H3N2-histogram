@@ -1,167 +1,201 @@
 # single-position-H3N2-histogram
-Python pipeline for automated generation of influenza antigenic histograms (Single potitions)
+
+Python pipeline for automated generation of publication-quality H3N2 HA amino-acid position figures.
+
+---
 
 # H3N2 Figure Generation Scripts (Reviewer Package)
 
-This repository contains the **original, manuscript-level scripts** used to generate publication-style figures for H3N2 analysis.
+This repository contains the original manuscript-level scripts used to generate automated H3N2 HA position figures and slide decks.
 
-The package includes:
+## Included Scripts
 
-1. `render_single_position_histogram_adaptive_COLORLOCKED_v2.py`
-2. `build_histogram_ha_deck_ORDERED_ALIGNED.py`
+- `render_single_position_histogram_adaptive_COLORLOCKED_v2.py`
+- `render_ha_single_position_figures.py`
+- `build_histogram_ha_deck_ORDERED_ALIGNED.py`
 
-No experimental data are included in this package.
+## Example Outputs
+
+- `Example output position 82.svg`
+- `Example output position 83.svg`
+
+No experimental datasets are included.
 
 ---
 
 # 1) Single-Position Histogram Renderer
 
-File:
+**File**
 ```
 render_single_position_histogram_adaptive_COLORLOCKED_v2.py
 ```
 
 ## Purpose
 
-Generates a full publication-style multi-panel figure for a single HA amino-acid position including:
+Generates a complete publication-style multi-panel figure for a single HA amino-acid position.
 
-• Stacked amino-acid proportion histogram (1965–2020)  
-• Antigenic cluster strip  
-• Neutralization matrix (per mAb × cluster)  
-• Mutation transition letters (WT → mutant across clusters)  
-• Adaptive layout scaling based on number of associated mAbs  
-• Locked amino-acid color logic  
-
-Output format: SVG (vector), optionally PNG
+**Output formats**
+- SVG (default, vector)
+- PNG (optional)
+- Transparent background
 
 ---
 
-## Figure Layout (Top → Bottom)
+## Figure Structure (Top → Bottom)
 
-### 1. Histogram Panel
-- X-axis: Year (1965–2020)
-- Y-axis: Proportion (0–1.0)
-- Stacked bars representing amino-acid frequencies per year
-- Locked amino-acid color map
-- Legend labeled “Amino Acid”
-- Transparent background
+### 1. Stacked Amino-Acid Histogram
+
+- Year range: 1965–2020 (locked)
+- Y-axis: Proportion (0–1.0, fixed 0.25 increments)
+- Deterministic amino-acid color map (frozen)
+- “Other” category automatically collapsed
+- Legend titled **Amino Acid**
 - Publication-aligned margins
 
 ### 2. Antigenic Cluster Strip
-Horizontal block strip aligned to histogram X-axis.
 
-Clusters included:
+Clusters:
+
 HK68 → EN72 → VI75 → TX77 → BK79 → SI87 → BE89 → BE92 → WU95 → SY97 → FU02 → CA04 → WI05 → PE09 → TX12 → HK14
 
-Each cluster:
-- Spans its historical year interval
-- Uses deterministic colormap assignment
-- Labeled by last two digits
-- Black border
+- Horizontally aligned to histogram bins
+- Deterministic `tab20` colormap
+- Black borders
+- Two-digit cluster labels
 
 ### 3. Neutralization Matrix
-Grid of:
-- Rows: mAbs associated with that position
-- Columns: antigenic clusters
-- Cell color: derived from neutralization Excel fill color
-- Mutation letters:
-    - Wild-type letter shown in cluster of emergence
-    - Mutant letter shown in next cluster
-- Negative mAb IDs (e.g., -117) treated as positive equivalents
 
-If no mAbs are associated:
-- Panel height collapses
-- “No associated mAbs” displayed
+- Rows: mAbs associated with that position
+- Columns: Antigenic clusters
+- Cell color derived from Excel fill color
+- Mutation letters rendered (WT → mutant across cluster boundary)
+- Negative mAb IDs treated as equivalent to positive (e.g., `-117 == 117`)
+- Adaptive height scaling
+- If no mAbs are present: panel collapses with message
 
 ### 4. Year Axis Strip
+
 - Tick marks every 5 years
 - Vertical year labels
 - Bold axis label “Year”
+- Locked placement (no stretching)
 
 ---
 
 ## Required Inputs
 
-The script expects the following inputs:
+User must provide:
 
-• Histogram proportion XLSX  
-• Neutralization matrix XLSX  
-• AA mutation position table XLSX  
-• JSON mapping of position → mAbs  
+- Histogram proportion XLSX  
+- Neutralization matrix XLSX  
+- Amino-acid mutation table XLSX  
+- JSON mapping (position → mAbs)
 
-These must be provided locally by the user.
-
-No data are bundled in this repository.
+No data files are bundled in this repository.
 
 ---
 
-## Output
+## Command Example
 
-Produces:
+```bash
+python render_single_position_histogram_adaptive_COLORLOCKED_v2.py \
+  --position 82 \
+  --out position_82.svg \
+  --fmt svg \
+  --hist_xlsx hist_data.xlsx \
+  --neut_xlsx neutralization.xlsx \
+  --aa_positions_xlsx aa_positions.xlsx \
+  --mapping_json position_mab_map.json
 ```
-position_<X>.svg
-```
-or
-```
-position_<X>.png
-```
-
-Vector output suitable for publication.
 
 ---
 
-# 2) PPT Deck Builder
+# 2) HA Head Renderer (Structural Panel)
 
-File:
+**File**
+```
+render_ha_single_position_figures.py
+```
+
+## Purpose
+
+Generates HA-head structural PNG renders (single residue highlighted) for integration with histogram slides.
+
+Designed for:
+
+- Transparent background
+- Fixed camera angle
+- Deterministic coloring
+- Compatible sizing for deck builder script
+
+**Output**
+```
+position_<X>_HA.png
+```
+
+---
+
+# 3) PowerPoint Deck Builder
+
+**File**
 ```
 build_histogram_ha_deck_ORDERED_ALIGNED.py
 ```
 
 ## Purpose
 
-Builds a PowerPoint deck where each slide contains:
+Builds a slide deck where each slide contains:
 
-• Left: Histogram SVG (converted internally to PNG)
-• Right: HA-head PyMOL figure PNG
-• Positions ordered descending (numeric)
-• Negative IDs treated as positive
-• Strict slide layout rules
+**Left panel**
+- Histogram (SVG converted internally to PNG)
+
+**Right panel**
+- HA-head PNG render
 
 ---
 
-## Slide Layout Specifications
+## Slide Layout Rules (Locked)
 
-Histogram:
+**Histogram**
 - Width: 7.5 inches
-- Left edge flush with slide boundary
+- Flush left
 - Height auto-scaled proportionally
 
-HA-head:
+**HA-head**
 - Width: 3.0 inches
-- Right edge flush with slide boundary
-- Vertically centered relative to histogram
+- Flush right
+- Vertically centered
 
-Both elements:
-- Centered vertically on slide
-- Consistent scaling across slides
+Slides:
+- Ordered descending by numeric position
+- Negative IDs treated as positive
+- Deterministic alignment
 
 ---
 
 ## Required Inputs
 
-• ZIP file of histogram SVGs  
-• ZIP file of HA-head PNGs  
+- ZIP file of histogram SVGs  
+- ZIP file of HA-head PNGs  
 
----
-
-## Output
-
-Produces:
+**Output**
 ```
 Histogram_HA_deck.pptx
 ```
 
-Slides ordered in descending position number.
+---
+
+# Reproducibility
+
+Figures are deterministic given:
+
+- Locked year range (1965–2020)
+- Frozen amino-acid color map
+- Fixed cluster definitions
+- Explicit layout constants (inches)
+- Neutralization height scaling derived from canonical reference (position 225)
+
+Identical inputs will produce identical figures.
 
 ---
 
@@ -169,24 +203,11 @@ Slides ordered in descending position number.
 
 This repository contains **code only**.
 
-No experimental data, no manuscript tables, no IC50 values, and no unpublished datasets are included.
+No:
+- IC50 data
+- Raw neutralization tables
+- Sequence datasets
+- Manuscript figures
+- Unpublished results
 
-Users must provide their own local data files.
-
----
-
-# Reproducibility
-
-Figures are deterministic given:
-- Fixed cluster definitions
-- Locked amino-acid color map
-- Defined year range (1965–2020)
-- Explicit layout parameters
-
-This ensures reproducibility across systems.
-
----
-
-# Contact
-
-These scripts were developed for automated generation of publication-quality H3N2 HA position figures.
+All experimental data must be supplied locally by the user.
