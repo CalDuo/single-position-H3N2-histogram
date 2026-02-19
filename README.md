@@ -2,6 +2,11 @@
 
 Python pipeline for automated generation of publication-quality H3N2 HA amino-acid position figures. These scripts are intended for use with chatGPT to generate histograms for figures using the chatGPT5.2 project context feature.
 
+
+## Using These Scripts in a ChatGPT Project
+
+To use these scripts within a ChatGPT Project workspace, upload the `.py` files directly into the Project’s “Files” section (Project → Files → Upload). Once uploaded, they become part of the persistent project context and can be referenced for code execution, modification, or figure generation within that workspace. After uploading, ensure all required input files (XLSX + JSON mapping) are also added to the Project files so the renderer can access them during execution.
+
 ---
 
 # H3N2 Figure Generation Scripts (Reviewer Package)
