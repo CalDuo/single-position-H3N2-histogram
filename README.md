@@ -1,6 +1,6 @@
 # single-position-H3N2-histogram
 
-Python pipeline for automated generation of publication-quality H3N2 HA amino-acid position figures.
+Python pipeline for automated generation of publication-quality H3N2 HA amino-acid position figures. These scripts are intended for use with chatGPT to generate histograms for figures using the chatGPT5.2 project context feature.
 
 ---
 
